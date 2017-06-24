@@ -5,13 +5,15 @@ public class Props
 	private int stateType; //Primary is 1, Secondary is 0, connection is 2 
 	private String tran; //The Actions which lead to the change in state
 	private String name; // name of the state
+	private Boolean jump;//stores if it has a jump node
 
 	
 	Props()
 	{
-		tran = "none";	
-		name = "none";
+		tran = null;	
+		name = null;
 		stateType = -1;
+		jump =false;
 	}
 	
 	public void setName(String val)
@@ -42,6 +44,16 @@ public class Props
 	public String getTran()
 	{
 		return tran;
+	}
+
+	public void setJump(Boolean val)
+	{
+		jump = val;
+	}
+	
+	public Boolean getJump()
+	{
+		return jump;
 	}
 	
 }

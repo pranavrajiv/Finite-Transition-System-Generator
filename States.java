@@ -24,6 +24,20 @@ public class States extends JFrame
 	}
 	
 	
+		//check if the connection node is already created if yes returns the index otherwise returns -1
+		public static int isConCre(List<List<Props>> x,int childIndex,String nam)
+		{
+			for(int j =0;j<x.get(childIndex).size();j++)
+			{
+				if(x.get(childIndex).get(j).getName().equals(nam))
+				{
+					return j;
+				}
+			}
+			return -1;
+			
+		}
+	
 	public static void writing(List<List<Props>> x)
 	{
 		try
@@ -48,7 +62,7 @@ public class States extends JFrame
 			write.println("\t\tshape=none;");
 			write.println("\t\tfillcolor=\"white\";");
 			write.println("\t\tfontcolor=\"brown\";");
-			write.println("\t\tlabel=\"Red Elipses are Primary States\nYellow Elipses are Secondary States\";");
+			write.println("\t\tlabel=\"Red Ellipses are Initial States\nYellow Ellipses are All Other States\";");
 			write.println("\t\t];");
 			write.println("}");
 			
@@ -81,19 +95,26 @@ public class States extends JFrame
 					write.println("\t\t"+x.get(i).get(0).getName().replaceAll(" ", "_") + " -> " + x.get(i).get(j).getName().replaceAll(" ", "_"));
 					write.println("\t\t[");
 					write.println("\t\tarrowhead=\"normal\"");
-					write.println("\t\tlabel=\""+x.get(i).get(j).getTran()+"\"");
+					
+					//checks if the transition condition is null
+					if(x.get(i).get(j).getTran()!=null)
+						write.println("\t\tlabel=\""+x.get(i).get(j).getTran()+"\"");
+						
 					write.println("\t\t];");
 					write.println();
 				}
 				
+				//check if it doesn't jump to another node
+				if(x.get(i).get(0).getJump()==false)
 				for(int j =0;j<x.size();j++)	
 				{
-					if((x.get(j).get(0).getType()==1))
+					if(x.get(j).get(0).getType()==1)
 					{
 						write.println("\t\t"+x.get(i).get(0).getName().replaceAll(" ", "_") + " -> " + x.get(j).get(0).getName().replaceAll(" ", "_"));
 						write.println("\t\t[");
 						write.println("\t\tarrowhead=\"normal\"");
-						write.println("\t\tlabel=\""+x.get(j).get(0).getTran()+"\"");
+						if(x.get(j).get(0).getTran()!=null)
+							write.println("\t\tlabel=\""+x.get(j).get(0).getTran()+"\"");
 						write.println("\t\t];");
 						write.println();
 					}
@@ -219,8 +240,9 @@ public class States extends JFrame
 			p = Pattern.compile("\"dialog_node\":\"\\w*(\\s*\\w*\\d*)*\",");
 			m = p.matcher(nodStringsArr[i]);
 			
+			
 			//stores the name of the dialog node
-			String child= "none";
+			String child= null;
 			
 			if (m.find()) 
 			{	
@@ -244,12 +266,12 @@ public class States extends JFrame
 			Matcher mat = pat.matcher(nodStringsArr[i]);
 			
 			//stores the name of the parent
-			String parent  = "none";
+			String parent  = null;
 			
 			//pattern for the transition condition
 			pat = Pattern.compile("\"conditions\":\"(\\w*\\s*\\d*#*@*-*)+\"");
 			Matcher un = pat.matcher(nodStringsArr[i]);
-			String tra = "none";
+			String tra = null;
 			
 			//check if it has a parent node
 			if (mat.find()) 
@@ -311,8 +333,37 @@ public class States extends JFrame
 				}
 				
 			}
+			
+			//stores the name of the jump node
+			String jmpNode= null;
+			
+			//pattern for the jump nodes
+			p = Pattern.compile("\"dialog_node\":\"\\w*(\\s*\\w*\\d*)*\"}");
+			Matcher jmp = p.matcher(nodStringsArr[i]);
+			
+			//check if it has a jump node
+			if (jmp.find()) 
+			{	
+				jmpNode = jmp.group().substring(15,jmp.group().length()-2);
+							
+				//specifies that this node has a jump condition in it 
+				x.get(isPresent(x,child)).get(0).setJump(true);																	
+				
+				//see if the jump node is already created
+				if(isConCre(x,isPresent(x,child),jmpNode)==-1)
+				 {
+							
+					Props pr= new Props();
+					x.get(isPresent(x,child)).add(pr);
+					pr.setType(2);
+					pr.setName(jmpNode);
+					
+				 }	 
 				
 			
+			}
+			
+					
 		}
 		
 		
@@ -323,16 +374,16 @@ public class States extends JFrame
 		//printing the array of link-list
 		for(int i =0;i<x.size();i++)
 		{
-			//System.out.println(nodStringsArr[i]);
+		//	System.out.println(nodStringsArr[i]);
 		
 			for(int j =0;j<x.get(i).size();j++)
 			{
-				System.out.print(x.get(i).get(j).getName() +" "+ x.get(i).get(j).getType()+" "+ x.get(i).get(j).getTran()+" ----> ");
+			System.out.print(x.get(i).get(j).getName() +" "+ x.get(i).get(j).getType()+" "+ x.get(i).get(j).getTran()+" ----> ");
 			}
 			System.out.println();
 		}
 		*/
-			
+		
 	}
 	
 }
