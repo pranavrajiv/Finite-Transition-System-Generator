@@ -46,6 +46,3 @@ public class ReadTheFile
 		return wholeFile;
 	}
 }
-
-			
-

@@ -38,11 +38,11 @@ public class States extends JFrame
 			
 		}
 	
-	public static void writing(List<List<Props>> x)
+	public static void writing(List<List<Props>> x,String arrayOfIntents[],String arrayOfEntities[])
 	{
 		try
 		{
-			String fileName = JOptionPane.showInputDialog("DOT File created\nWhat would you like to name the file?");
+			String fileName = JOptionPane.showInputDialog("DOT and Text File created\nWhat would you like to name the files?");
 			PrintWriter write = new PrintWriter(System.getProperty("user.home")+"/Desktop/"+fileName+".dot", "UTF-8");
 			write.println("digraph ");
 			write.println("{");
@@ -125,13 +125,67 @@ public class States extends JFrame
 			write.println("\t}");
 			write.println("}");
 			write.close();
-			JOptionPane.showMessageDialog(null,fileName+".dot has been saved on the Desktop", "Name", JOptionPane.INFORMATION_MESSAGE);
+			
+			
+			
+			
+			
+			
+			PrintWriter writeText = new PrintWriter(System.getProperty("user.home")+"/Desktop/"+fileName+".txt", "UTF-8");
+			writeText.println("INTENTS");
+			for(int j =0;j<arrayOfIntents.length;j++)
+			{
+			
+				Pattern pqrs = Pattern.compile(".*::");
+				Matcher abcd = pqrs.matcher(arrayOfIntents[j]);
+				
+				if(abcd.find())
+				writeText.println("::"+abcd.group());
+				
+				pqrs = Pattern.compile(",,,[^(,,,)]*,,,");
+				abcd = pqrs.matcher(arrayOfIntents[j]);
+				
+				while(abcd.find())
+					writeText.println(abcd.group().substring(3,abcd.group().length()-3));
+				writeText.println();
+			}	
+			writeText.println();
+			writeText.println();
+			writeText.println();
+			writeText.println();
+			writeText.println("ENTITIES");
+			
+			for(int j =0;j<arrayOfEntities.length;j++)
+			{
+				
+				Pattern pqrs = Pattern.compile(".*::");
+				Matcher abcd = pqrs.matcher(arrayOfEntities[j]);
+				
+				if(abcd.find())
+				writeText.println("::"+abcd.group());
+				
+				pqrs = Pattern.compile(",,,[^(,,,)]*,,,");
+				abcd = pqrs.matcher(arrayOfEntities[j]);
+				
+				while(abcd.find())
+					writeText.println(abcd.group().substring(3,abcd.group().length()-3));
+				writeText.println();
+				
+			}	
+			writeText.println();
+			
+			writeText.close();
+			
+			
+			
+			
+			JOptionPane.showMessageDialog(null,fileName+".dot and " + fileName+".txt has been saved on the Desktop", "Name", JOptionPane.INFORMATION_MESSAGE);
 
 		}
 		
 		catch (IOException e) 
 		{
-			JOptionPane.showMessageDialog(null,"Dot file could not be created", "Name", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null,"Dot and Txt file could not be created", "Name", JOptionPane.INFORMATION_MESSAGE);
 		}
 			
 	}
@@ -179,7 +233,7 @@ public class States extends JFrame
 		
 		
 		//find the name of the file
-		Pattern p = Pattern.compile("\\{\"name\":\"(\\s*\\w*\\d*)*\"");
+		Pattern p = Pattern.compile("\\{\"name\":\"[^\"]*\"");
 		Matcher m = p.matcher( theFile );
 		
 		if(m.find())
@@ -194,6 +248,192 @@ public class States extends JFrame
 		//find the start and end of the whole array of nodes
 		if (m.find()) 
 			ei=m.end();
+		
+		
+		
+		
+		
+		
+		
+		//variable that stores the whole entities
+		String entities = null;
+		
+		
+		//variable that stores the whole intents
+				String intents =null;
+		
+		//stores the whole intents part1
+		p = Pattern.compile("intents.*entities");
+		m = p.matcher( theFile );
+		
+
+		
+		if (m.find()) 
+			intents = m.group().substring(11,m.group().length()-1);
+		
+	
+		//stores the whole intents part2
+		p = Pattern.compile(".*\\}]");
+		m = p.matcher( intents);
+		
+		
+		if (m.find()) 
+			intents= m.group();
+		
+		String dummySring = intents;
+		
+
+		
+
+		
+		//stores the whole intents part3
+		p = Pattern.compile("\"intent\":\"[^\"]*\"");
+		m = p.matcher( intents);
+		
+		int noOfIntents =0;
+		while(m.find()) 
+			noOfIntents ++;
+		
+	
+		
+		String[] arrayOfIntents = new String[noOfIntents];
+		
+		
+		int dummyVariable=0;
+		
+		for(int counterr=0;counterr < noOfIntents;counterr++)
+		{
+			arrayOfIntents[counterr] = dummySring.substring(dummyVariable,dummySring.indexOf("\"description\":",dummyVariable));
+			dummyVariable = dummySring.indexOf("\"intent\":",dummyVariable+1);
+
+		}
+		
+		dummySring = null;
+		dummyVariable = 0;
+		
+		for(int counterr=0;counterr < noOfIntents;counterr++)
+		{
+			dummySring = arrayOfIntents[counterr];
+			
+			p = Pattern.compile("\"intent\":\"[^\"]*\"");
+			m = p.matcher(dummySring);
+
+			if(m.find())
+				arrayOfIntents[counterr] = m.group().substring(10,m.group().length()-1)+"::,,,";
+				
+			p = Pattern.compile("\"text\":\"[^\"]*\"");
+			m = p.matcher(dummySring);
+
+			
+			while(m.find())
+				arrayOfIntents[counterr] = arrayOfIntents[counterr] + m.group().substring(8,m.group().length()-1)+",,,";
+			
+			
+			dummySring = null;
+		}
+		
+		
+		
+			
+		//variable that stores the whole entities
+		entities = null;
+				
+		//stores the whole entities part1
+		p = Pattern.compile("entities.*\"language\":");
+		m = p.matcher( theFile );
+				
+
+				
+				if (m.find()) 
+					entities = m.group().substring(11,m.group().length()-1);
+				
+			
+				//stores the whole entities part2
+				p = Pattern.compile(".*\\}]");
+				m = p.matcher( entities);
+				
+				
+				if (m.find()) 
+					entities= m.group();
+				
+				dummySring = entities;
+				
+
+				
+
+				
+				//stores the whole entities part3
+				p = Pattern.compile("\"entity\":\"[^\"]*\"");
+				m = p.matcher(entities);
+				
+				int noOfEntities =0;
+				while(m.find()) 
+					noOfEntities ++;
+				
+			
+				
+				String[] arrayOfEntities = new String[noOfEntities];
+				
+				
+				dummyVariable=1;
+				
+				for(int counterr=0;counterr < noOfEntities;counterr++)
+				{
+					arrayOfEntities[counterr] = dummySring.substring(dummyVariable,dummySring.indexOf("\"description\":",dummyVariable));
+					dummyVariable = dummySring.indexOf("\"entity\":",dummyVariable+1);
+				}
+				
+				dummySring = null;
+				dummyVariable = 0;
+				
+				for(int counterr=0;counterr < noOfEntities;counterr++)
+				{
+					dummySring = arrayOfEntities[counterr];
+					
+					p = Pattern.compile("\"entity\":\"[^\"]*\"");
+					m = p.matcher(dummySring);
+
+					if(m.find())
+						arrayOfEntities[counterr] = m.group().substring(10,m.group().length()-1)+"::,,,";
+						
+						
+					
+
+					p = Pattern.compile("\"value\":\"[^\"]*\"");
+					m = p.matcher(dummySring);
+
+					
+					while(m.find())
+						arrayOfEntities[counterr] = arrayOfEntities[counterr] +m.group().substring(9,m.group().length()-1) +",,,";
+					
+					
+					dummySring = null;
+				}
+				
+
+			
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	
+
 		
 		//pattern to determine how many nodes are there
 		p = Pattern.compile("\\{\"go_to\"");
@@ -237,7 +477,7 @@ public class States extends JFrame
 				nodStringsArr[i]= theFile.substring(nodStarArr[i],ei-2);	
 	
 			//pattern for the name of the node
-			p = Pattern.compile("\"dialog_node\":\"\\w*(\\s*\\w*\\d*)*\",");
+			p = Pattern.compile("\"dialog_node\":\"[^\"]*\",");
 			m = p.matcher(nodStringsArr[i]);
 			
 			
@@ -262,14 +502,14 @@ public class States extends JFrame
 			}
 			
 			//pattern to check if the node has a parent
-			Pattern pat = Pattern.compile("\"parent\":\"(\\w*\\s*\\d*)+\"");
+			Pattern pat = Pattern.compile("\"parent\":\"[^\"]*\"");
 			Matcher mat = pat.matcher(nodStringsArr[i]);
 			
 			//stores the name of the parent
 			String parent  = null;
 			
 			//pattern for the transition condition
-			pat = Pattern.compile("\"conditions\":\"(\\w*\\s*\\d*#*@*-*)+\"");
+			pat = Pattern.compile("\"conditions\":\"[^\"]*\"");
 			Matcher un = pat.matcher(nodStringsArr[i]);
 			String tra = null;
 			
@@ -338,7 +578,7 @@ public class States extends JFrame
 			String jmpNode= null;
 			
 			//pattern for the jump nodes
-			p = Pattern.compile("\"dialog_node\":\"\\w*(\\s*\\w*\\d*)*\"}");
+			p = Pattern.compile("\"dialog_node\":\"[^\"]*\"}");
 			Matcher jmp = p.matcher(nodStringsArr[i]);
 			
 			//check if it has a jump node
@@ -367,7 +607,7 @@ public class States extends JFrame
 		}
 		
 		
-		writing(x);
+		writing(x,arrayOfIntents,arrayOfEntities);
 		frame.dispose();
 		
 		/*
