@@ -412,31 +412,11 @@ public class States extends JFrame
 				
 
 			
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 	
 
 		
 		//pattern to determine how many nodes are there
-		p = Pattern.compile("\\{\"go_to\"");
+		p = Pattern.compile("\\{\"title\"");
 		m = p.matcher( theFile );
 		
 		//loop which finds the number of nodes
@@ -507,9 +487,9 @@ public class States extends JFrame
 			
 			//stores the name of the parent
 			String parent  = null;
-			
 			//pattern for the transition condition
-			pat = Pattern.compile("\"conditions\":\"[^\"]*\"");
+			//pat = Pattern.compile("\"conditions\":\"[^(\",)]*\"");
+			pat = Pattern.compile("\"conditions\":\"(.*?)\",");
 			Matcher un = pat.matcher(nodStringsArr[i]);
 			String tra = null;
 			
@@ -531,7 +511,8 @@ public class States extends JFrame
 					//checks if there is a transition to that state
 					if(un.find())
 					{
-						tra= un.group().substring(14,un.group().length()-1);
+						
+						tra= un.group().substring(14,un.group().length()-2);
 						pr.setTran(tra);
 					}
 				 }	 
@@ -554,7 +535,8 @@ public class States extends JFrame
 					//checks if there is a transition to that state
 					if(un.find())
 					{
-						tra= un.group().substring(14,un.group().length()-1);
+						
+						tra= un.group().substring(14,un.group().length()-2);
 						pr.setTran(tra);
 					}
 					
@@ -568,7 +550,8 @@ public class States extends JFrame
 				//checks if there is a transition to that state
 				if(un.find())
 				{
-					tra= un.group().substring(14,un.group().length()-1);
+					
+					tra= un.group().substring(14,un.group().length()-2);
 					x.get(isPresent(x,child)).get(0).setTran(tra);
 				}
 				
